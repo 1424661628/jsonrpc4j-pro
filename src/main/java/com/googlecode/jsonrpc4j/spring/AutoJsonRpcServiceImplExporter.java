@@ -83,7 +83,7 @@ public class AutoJsonRpcServiceImplExporter implements BeanFactoryPostProcessor 
 				
 				List<String> paths = new ArrayList<>();
 				Collections.addAll(paths, autoJsonRpcServiceImplAnnotation.additionalPaths());
-				paths.add(jsonRpcServiceAnnotation.value());
+				paths.add(getRpcInterfaceName((DefaultListableBeanFactory) beanFactory,beanName)); //
 				
 				for (String path : paths) {
 					if (!PATTERN_JSONRPC_PATH.matcher(path).matches()) {
@@ -113,6 +113,18 @@ public class AutoJsonRpcServiceImplExporter implements BeanFactoryPostProcessor 
                 }
 			}
 		}
+	}
+
+	//
+	private static String getRpcInterfaceName(DefaultListableBeanFactory defaultListableBeanFactory, String serviceBeanName) {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonServiceExporter.class).addPropertyReference("service", serviceBeanName);
+		BeanDefinition serviceBeanDefinition = findBeanDefinition(defaultListableBeanFactory, serviceBeanName);
+		for (Class<?> currentInterface : getBeanInterfaces(serviceBeanDefinition, defaultListableBeanFactory.getBeanClassLoader())) {
+			if (currentInterface.isAnnotationPresent(JsonRpcService.class)) {
+				return currentInterface.getName();
+			}
+		}
+		return null;
 	}
 	
 	private static boolean isNotDuplicateService(Map<String, String> serviceBeanNames, String beanName, String pathValue) {
@@ -211,7 +223,7 @@ public class AutoJsonRpcServiceImplExporter implements BeanFactoryPostProcessor 
 	/**
 	 * Find a {@link BeanDefinition} in the {@link BeanFactory} or it's parents.
 	 */
-	private BeanDefinition findBeanDefinition(ConfigurableListableBeanFactory beanFactory, String serviceBeanName) {
+	private static BeanDefinition findBeanDefinition(ConfigurableListableBeanFactory beanFactory, String serviceBeanName) {
 		if (beanFactory.containsLocalBean(serviceBeanName)) {
 			return beanFactory.getBeanDefinition(serviceBeanName);
 		}
@@ -222,7 +234,7 @@ public class AutoJsonRpcServiceImplExporter implements BeanFactoryPostProcessor 
 		throw new NoSuchBeanDefinitionException(serviceBeanName);
 	}
 	
-	private Class<?>[] getBeanInterfaces(BeanDefinition serviceBeanDefinition, ClassLoader beanClassLoader) {
+	private static Class<?>[] getBeanInterfaces(BeanDefinition serviceBeanDefinition, ClassLoader beanClassLoader) {
 		String beanClassName = serviceBeanDefinition.getBeanClassName();
 		try {
 			Class<?> beanClass = forName(beanClassName, beanClassLoader);

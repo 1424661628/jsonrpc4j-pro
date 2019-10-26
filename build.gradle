@@ -16,7 +16,7 @@ plugins {
 
 description = 'This project aims to provide the facility to easily implement JSON-RPC for the java programming language.'
 version = '1.5.3'
-group = 'com.github.briandilley.jsonrpc4j'
+group = 'com.lvmen.jsonrpc4j'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -34,6 +34,8 @@ compileTestJava {
 }
 
 repositories {
+    mavenLocal()
+    maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
     mavenCentral()
 }
 

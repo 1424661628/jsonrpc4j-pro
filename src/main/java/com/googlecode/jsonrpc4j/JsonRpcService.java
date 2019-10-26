@@ -18,5 +18,5 @@ public @interface JsonRpcService {
 	 *
 	 * @return the service path
 	 */
-	String value();
+	String value() default ""; //
 }
