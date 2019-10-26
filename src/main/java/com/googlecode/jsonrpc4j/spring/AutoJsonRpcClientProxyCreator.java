@@ -94,7 +94,7 @@ public class AutoJsonRpcClientProxyCreator implements BeanFactoryPostProcessor, 
 	 * Appends the base path to the path found in the interface.
 	 */
 	private String appendBasePath(String path) {
-		String url = baseUrl.toString();
+		String url = baseUrl.toString(); //
 		if (!url.endsWith("/")){
 			url = url.concat("/");
 		}
